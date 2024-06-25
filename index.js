@@ -8,7 +8,7 @@ const dns = require('dns');
 const shortid = require('shortid');
 const {URL} = require('url');
 const Url = require('./Url');
-const autoIncrement = require('mongoose-auto-increment');
+const Counter = require('./Counter');
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -35,8 +35,6 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-
-autoIncrement.initialize(mongoose.connection);
 const isValidUrl = (urlString) => {
   try {
     const url = new URL(urlString);
@@ -48,32 +46,34 @@ const isValidUrl = (urlString) => {
 };
 
 app.post('/api/shorturl', async (req, res) => {
-  const { originalUrl } = req.body;
+  const { url } = req.body;
 
-  if (!originalUrl || !isValidUrl(originalUrl)) {
-    return res.status(400).json({ error: 'Invalid URL' });
+  if (!url || !isValidUrl(url)) {
+    return res.json({ error: 'invalid URL' });
   }
 
-  // Verify the URL
-  const hostname = new URL(originalUrl).hostname;
+  const hostname = new URL(url).hostname;
   dns.lookup(hostname, async (err) => {
     if (err) {
-      console.log(err)
-      return res.status(400).json({ error: 'Invalid URL' });
+      return res.json({ error: 'invalid URL' });
     }
 
     try {
-      let url = await Url.findOne({ originalUrl });
-      if (url) {
-        res.json({ original_url: url.originalUrl, short_url: url.shortUrl });
+      let foundUrl = await Url.findOne({ originalUrl: url });
+      if (foundUrl) {
+        return res.json({ original_url: foundUrl.originalUrl, short_url: foundUrl.shortUrl });
       } else {
-        url = new Url({ originalUrl });
-        await url.save();
-        res.json({ original_url: url.originalUrl, short_url: url.shortUrl });
+        // Get the current counter value and increment it
+        let counter = await Counter.findOneAndUpdate({}, { $inc: { count: 1 } }, { new: true, upsert: true });
+        let shortUrl = counter.count;
+
+        foundUrl = new Url({ originalUrl: url, shortUrl });
+        await foundUrl.save();
+        return res.json({ original_url: foundUrl.originalUrl, short_url: foundUrl.shortUrl });
       }
     } catch (err) {
       console.error(err);
-      res.status(500).json('Server error');
+      return res.status(500).json('Server error');
     }
   });
 });
@@ -90,7 +90,7 @@ app.get('/api/shorturl/:shortUrl', async function(req, res) {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json('Server error');
+    return res.status(500).json('Server error');
   }
 })
 
