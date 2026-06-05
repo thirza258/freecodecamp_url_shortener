@@ -19,9 +19,18 @@ class ClickEventInline(admin.TabularInline):
 
 @admin.register(ShortURL)
 class ShortURLAdmin(admin.ModelAdmin):
-    list_display = ("short_code", "original_url", "is_active", "click_count", "analytics_count", "last_accessed_at", "created_at")
-    search_fields = ("short_code", "original_url")
-    list_filter = ("is_active", "created_at", "last_accessed_at")
+    list_display = (
+        "short_code",
+        "owner",
+        "original_url",
+        "is_active",
+        "click_count",
+        "analytics_count",
+        "last_accessed_at",
+        "created_at",
+    )
+    search_fields = ("short_code", "original_url", "owner__username")
+    list_filter = ("is_active", "created_at", "last_accessed_at", "owner")
     ordering = ("-created_at",)
     readonly_fields = ("created_at", "updated_at", "last_accessed_at", "click_count", "analytics_count", "analytics_summary")
     inlines = (ClickEventInline,)

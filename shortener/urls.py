@@ -1,13 +1,22 @@
 import re
 
 from django.conf import settings
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, re_path
 
+from .forms import LoginForm
 from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
     path("dashboard/", views.dashboard, name="dashboard"),
+    path("register/", views.register, name="register"),
+    path(
+        "login/",
+        LoginView.as_view(template_name="registration/login.html", authentication_form=LoginForm),
+        name="login",
+    ),
+    path("logout/", LogoutView.as_view(next_page="index"), name="logout"),
     path("health/", views.health_check, name="health"),
 ]
 

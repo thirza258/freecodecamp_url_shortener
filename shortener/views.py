@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from django.contrib.auth import login as auth_login
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db.models import F, Sum
@@ -8,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django_ratelimit.decorators import ratelimit
 
-from .forms import ShortURLForm
+from .forms import RegisterForm, ShortURLForm
 from .models import ClickEvent, ShortURL
 from .rate_limits import create_rate, redirect_rate
 from .utils import build_qr_data_uri, build_short_link
@@ -33,6 +34,7 @@ def index(request: HttpRequest) -> HttpResponse:
             short_url = ShortURL.objects.create_short_url(
                 original_url=form.cleaned_data["original_url"],
                 short_code=form.cleaned_data["short_code"] or None,
+                owner=request.user if request.user.is_authenticated else None,
             )
         except ValidationError as exc:
             if hasattr(exc, "message_dict"):
@@ -49,8 +51,13 @@ def index(request: HttpRequest) -> HttpResponse:
 
     total_clicks = ShortURL.objects.aggregate(total=Sum("click_count"))["total"]
     total_links = ShortURL.objects.count()
-    top_urls = ShortURL.objects.filter(is_active=True).order_by("-click_count", "-created_at")[:5]
-    recent_urls = ShortURL.objects.order_by("-created_at")[:10]
+    if request.user.is_authenticated:
+        user_links = ShortURL.objects.filter(owner=request.user)
+        top_urls = user_links.filter(is_active=True).order_by("-click_count", "-created_at")[:5]
+        recent_urls = user_links.order_by("-created_at")[:10]
+    else:
+        top_urls = ShortURL.objects.none()
+        recent_urls = ShortURL.objects.none()
     return render(
         request,
         "shortener/index.html",
@@ -62,6 +69,19 @@ def index(request: HttpRequest) -> HttpResponse:
             "recent_urls": recent_urls,
         },
     )
+
+
+def register(request: HttpRequest) -> HttpResponse:
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
+    form = RegisterForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        auth_login(request, user)
+        return redirect("dashboard")
+
+    return render(request, "registration/register.html", {"form": form})
 
 
 def success(request: HttpRequest, short_code: str) -> HttpResponse:
@@ -85,6 +105,17 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     inactive_links = total_links - active_links
     recent_activity = ClickEvent.objects.select_related("short_url").order_by("-timestamp")[:12]
     top_urls = ShortURL.objects.order_by("-click_count", "-created_at")[:10]
+    user_links = ShortURL.objects.none()
+    user_total_links = 0
+    user_total_clicks = 0
+    user_recent_urls = ShortURL.objects.none()
+
+    if request.user.is_authenticated:
+        user_links = ShortURL.objects.filter(owner=request.user)
+        user_total_links = user_links.count()
+        user_total_clicks = user_links.aggregate(total=Sum("click_count"))["total"] or 0
+        user_recent_urls = user_links.order_by("-created_at")[:10]
+
     return render(
         request,
         "shortener/dashboard.html",
@@ -95,6 +126,9 @@ def dashboard(request: HttpRequest) -> HttpResponse:
             "inactive_links": inactive_links,
             "recent_activity": recent_activity,
             "top_urls": top_urls,
+            "user_total_links": user_total_links,
+            "user_total_clicks": user_total_clicks,
+            "user_recent_urls": user_recent_urls,
         },
     )
 

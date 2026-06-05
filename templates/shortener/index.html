@@ -6,6 +6,11 @@
     <div class="col-lg-7">
       <h1 class="display-5 fw-semibold lh-1 mb-3">URL Shortener</h1>
       <p class="lead text-secondary mb-0">Create a compact link for any long URL. Use a custom slug when you need a memorable path, or let the system generate one for you.</p>
+      {% if request.user.is_authenticated %}
+      <p class="mt-3 mb-0 text-secondary">You are signed in as <strong>{{ request.user.username }}</strong>. Your links will be available in the dashboard after refresh.</p>
+      {% else %}
+      <p class="mt-3 mb-0 text-secondary">You can use the shortener without signing in. Register or log in if you want your links to persist on your account.</p>
+      {% endif %}
     </div>
     <div class="col-lg-5">
       <div class="stat-card">
@@ -61,7 +66,8 @@
     </div>
 
     <div class="glass-card p-4">
-      <h2 class="h5 mb-3">Top URLs</h2>
+      {% if request.user.is_authenticated %}
+      <h2 class="h5 mb-3">Your top URLs</h2>
       {% if top_urls %}
       <div class="recent-list mb-4">
         {% for item in top_urls %}
@@ -80,10 +86,10 @@
         {% endfor %}
       </div>
       {% else %}
-      <p class="text-secondary mb-4">No active URLs yet.</p>
+      <p class="text-secondary mb-4">No personal URLs yet.</p>
       {% endif %}
 
-      <h2 class="h5 mb-3">Recent URLs</h2>
+      <h2 class="h5 mb-3">Your recent URLs</h2>
       {% if recent_urls %}
       <div class="recent-list">
         {% for item in recent_urls %}
@@ -104,7 +110,11 @@
         {% endfor %}
       </div>
       {% else %}
-      <p class="text-secondary mb-0">No links have been created yet.</p>
+      <p class="text-secondary mb-0">No personal links have been created yet.</p>
+      {% endif %}
+      {% else %}
+      <h2 class="h5 mb-3">Account links</h2>
+      <p class="text-secondary mb-0">Log in to see your saved URLs here. Anonymous links still work, but they are not attached to an account.</p>
       {% endif %}
     </div>
   </div>

@@ -21,27 +21,41 @@ class ShortURLManager(models.Manager):
     def short_code_exists(self, short_code: str) -> bool:
         return self.filter(short_code=short_code).exists() or short_code.lower() in settings.RESERVED_SHORT_CODES
 
-    def create_short_url(self, *, original_url: str, short_code: str | None = None) -> "ShortURL":
+    def create_short_url(
+        self,
+        *,
+        original_url: str,
+        short_code: str | None = None,
+        owner: models.Model | None = None,
+    ) -> "ShortURL":
         original_url = original_url.strip()
         if short_code:
             short_code = normalize_short_code(short_code)
             if self.short_code_exists(short_code):
                 raise IntegrityError("Short code already exists.")
-            short_url = self.model(original_url=original_url, short_code=short_code)
+            short_url = self.model(original_url=original_url, short_code=short_code, owner=owner)
             short_url.full_clean(validate_unique=False)
             with transaction.atomic():
-                return self.create(original_url=short_url.original_url, short_code=short_url.short_code)
+                return self.create(
+                    original_url=short_url.original_url,
+                    short_code=short_url.short_code,
+                    owner=short_url.owner,
+                )
 
         max_attempts = 50
         for _ in range(max_attempts):
             candidate = self.generate_short_code()
             if self.short_code_exists(candidate):
                 continue
-            short_url = self.model(original_url=original_url, short_code=candidate)
+            short_url = self.model(original_url=original_url, short_code=candidate, owner=owner)
             short_url.full_clean(validate_unique=False)
             try:
                 with transaction.atomic():
-                    return self.create(original_url=short_url.original_url, short_code=short_url.short_code)
+                    return self.create(
+                        original_url=short_url.original_url,
+                        short_code=short_url.short_code,
+                        owner=short_url.owner,
+                    )
             except IntegrityError:
                 continue
         raise IntegrityError("Unable to generate a unique short code.")
@@ -50,6 +64,13 @@ class ShortURLManager(models.Manager):
 class ShortURL(models.Model):
     original_url = models.URLField(max_length=2048, validators=[validate_http_https_url])
     short_code = models.CharField(max_length=50, unique=True, db_index=True, validators=[SHORT_CODE_VALIDATOR])
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="short_urls",
+    )
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
     click_count = models.PositiveIntegerField(default=0, db_index=True)

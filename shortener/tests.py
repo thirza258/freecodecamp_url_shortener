@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import override_settings
 from django.test import TestCase
@@ -91,6 +92,64 @@ class ShortenerIndexTests(TestCase):
             short_url = ShortURL.objects.create_short_url(original_url="https://example.com/two")
 
         self.assertEqual(short_url.short_code, "UNIQUE123")
+
+    def test_guest_creation_does_not_attach_an_owner(self) -> None:
+        response = self.client.post(
+            reverse("index"),
+            data={
+                "original_url": "https://example.com/guest",
+                "short_code": "",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        short_url = ShortURL.objects.latest("created_at")
+        self.assertIsNone(short_url.owner)
+
+
+class ShortenerAuthTests(TestCase):
+    def test_registers_and_signs_in_user_without_email(self) -> None:
+        response = self.client.post(
+            reverse("register"),
+            data={
+                "username": "alice",
+                "password1": "strong-pass-12345",
+                "password2": "strong-pass-12345",
+            },
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], reverse("dashboard"))
+        self.assertTrue(get_user_model().objects.filter(username="alice").exists())
+        self.assertIn("_auth_user_id", self.client.session)
+
+    def test_logged_in_user_can_create_owned_urls(self) -> None:
+        user = get_user_model().objects.create_user(username="bob", password="strong-pass-12345")
+        self.client.login(username="bob", password="strong-pass-12345")
+
+        response = self.client.post(
+            reverse("index"),
+            data={
+                "original_url": "https://example.com/owned",
+                "short_code": "owned-link",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        short_url = ShortURL.objects.get(short_code="owned-link")
+        self.assertEqual(short_url.owner, user)
+
+    def test_dashboard_contains_personal_links_for_authenticated_users(self) -> None:
+        user = get_user_model().objects.create_user(username="carol", password="strong-pass-12345")
+        ShortURL.objects.create(original_url="https://example.com/owned", short_code="carol-link", owner=user)
+        self.client.login(username="carol", password="strong-pass-12345")
+
+        response = self.client.get(reverse("dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "carol-link")
+        self.assertContains(response, "Your links")
 
 
 class ShortenerRedirectTests(TestCase):

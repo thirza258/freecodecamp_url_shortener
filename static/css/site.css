@@ -22,6 +22,21 @@ body {
   color: #000;
 }
 
+#siteNav .nav-link {
+  color: #000;
+}
+
+.nav-action {
+  background: transparent;
+  border: 0;
+  padding: 0.5rem 0.75rem;
+}
+
+.nav-user {
+  color: var(--text-soft);
+  padding: 0.5rem 0.75rem;
+}
+
 .page-shell {
   min-height: 100vh;
   background: #fff;

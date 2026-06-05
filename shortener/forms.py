@@ -3,6 +3,7 @@ from __future__ import annotations
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from .models import ShortURL
 from .validators import SHORT_CODE_VALIDATOR, normalize_short_code, validate_http_https_url
@@ -52,3 +53,54 @@ class ShortURLForm(forms.Form):
         if ShortURL.objects.filter(short_code=value).exists():
             raise ValidationError("This short URL already exists. Please choose another slug.")
         return value
+
+
+class RegisterForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        fields = ("username",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update(
+            {
+                "class": "form-control form-control-lg",
+                "autocomplete": "username",
+                "placeholder": "Choose a username",
+            }
+        )
+        self.fields["password1"].widget.attrs.update(
+            {
+                "class": "form-control form-control-lg",
+                "autocomplete": "new-password",
+                "placeholder": "Create a password",
+            }
+        )
+        self.fields["password2"].widget.attrs.update(
+            {
+                "class": "form-control form-control-lg",
+                "autocomplete": "new-password",
+                "placeholder": "Confirm your password",
+            }
+        )
+
+
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control form-control-lg",
+                "autocomplete": "username",
+                "placeholder": "Username",
+            }
+        )
+    )
+    password = forms.CharField(
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control form-control-lg",
+                "autocomplete": "current-password",
+                "placeholder": "Password",
+            }
+        ),
+    )
