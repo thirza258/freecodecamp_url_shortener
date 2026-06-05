@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Short URL Created · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="glass-card p-4 p-lg-5">
+      <p class="eyebrow">Success</p>
+      <h1 class="display-6 fw-semibold mb-3">Your short URL is ready.</h1>
+      <p class="text-secondary mb-4">Copy the link below or scan the QR code to open it on another device.</p>
+
+      <div class="row g-4 align-items-center">
+        <div class="col-md-7">
+          <div class="short-link-box mb-3">
+            <div class="small text-uppercase text-secondary mb-1">Generated short URL</div>
+            <div class="fw-semibold text-break" id="successShortUrl">{{ short_link }}</div>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-primary" data-copy-target="#successShortUrl">Copy button</button>
+            <a class="btn btn-outline-secondary" href="{{ short_link }}" target="_blank" rel="noopener">Open</a>
+            <a class="btn btn-outline-primary" href="{% url 'dashboard' %}">Dashboard</a>
+          </div>
+        </div>
+        <div class="col-md-5 text-center">
+          <img src="{{ qr_code_data_uri }}" alt="QR code for {{ short_link }}" class="img-fluid rounded-4 shadow-sm qr-code">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

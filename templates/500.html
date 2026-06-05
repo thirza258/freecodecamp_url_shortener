@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Server Error · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="glass-card text-center p-5">
+      <p class="eyebrow">500</p>
+      <h1 class="display-6 fw-semibold mb-3">Something went wrong.</h1>
+      <p class="text-secondary mb-4">An unexpected server error occurred. Please try again shortly.</p>
+      <a class="btn btn-primary btn-lg" href="{% url 'index' %}">Go home</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

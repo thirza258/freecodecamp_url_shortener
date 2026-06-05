@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nevatal_url_shortener}
+      POSTGRES_USER: ${POSTGRES_USER:-nevatal}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nevatal}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nevatal} -d ${POSTGRES_DB:-nevatal_url_shortener}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+
+  web:
+    build: .
+    env_file:
+      - .env
+    environment:
+      DEBUG: ${DEBUG:-0}
+      SECRET_KEY: ${SECRET_KEY:-change-me}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,url.nevatal.tech,nevatal.tech}
+      DOMAIN_NAME: ${DOMAIN_NAME:-url.nevatal.tech}
+      PUBLIC_SHORT_DOMAIN: ${PUBLIC_SHORT_DOMAIN:-nevatal.tech}
+      POSTGRES_DB: ${POSTGRES_DB:-nevatal_url_shortener}
+      POSTGRES_USER: ${POSTGRES_USER:-nevatal}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nevatal}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_URL: redis://redis:6379/1
+    ports:
+      - "8200:8200"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:
