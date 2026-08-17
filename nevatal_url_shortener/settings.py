@@ -46,9 +46,19 @@ RESERVED_SHORT_CODES = {
     "admin",
     "health",
     "robots.txt",
+    "sitemap.xml",
+    "site.webmanifest",
+    "manifest.json",
     "favicon.ico",
+    "favicon.svg",
+    "apple-touch-icon.png",
     "static",
     "media",
+    "dashboard",
+    "register",
+    "login",
+    "logout",
+    "success",
 }
 
 ALLOWED_HOSTS = list(
@@ -57,6 +67,7 @@ ALLOWED_HOSTS = list(
             "ALLOWED_HOSTS",
             ",".join(["localhost", "127.0.0.1", "testserver", "web", "nginx", APP_DOMAIN, SHORT_LINK_DOMAIN]),
         )
+        + ["localhost", "127.0.0.1", "testserver", "web"]
     )
 )
 CSRF_TRUSTED_ORIGINS = list(

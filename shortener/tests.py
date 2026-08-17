@@ -3,6 +3,7 @@ from __future__ import annotations
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.test import override_settings
 from django.test import TestCase
@@ -11,7 +12,17 @@ from django.urls import reverse
 from .models import ClickEvent, ShortURL
 
 
-class ShortenerIndexTests(TestCase):
+class BaseShortenerTestCase(TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        cache.clear()
+
+    def tearDown(self) -> None:
+        cache.clear()
+        super().tearDown()
+
+
+class ShortenerIndexTests(BaseShortenerTestCase):
     def test_create_custom_slug(self) -> None:
         response = self.client.post(
             reverse("index"),
@@ -107,7 +118,7 @@ class ShortenerIndexTests(TestCase):
         self.assertIsNone(short_url.owner)
 
 
-class ShortenerAuthTests(TestCase):
+class ShortenerAuthTests(BaseShortenerTestCase):
     def test_registers_and_signs_in_user_without_email(self) -> None:
         response = self.client.post(
             reverse("register"),
@@ -152,7 +163,7 @@ class ShortenerAuthTests(TestCase):
         self.assertContains(response, "Your links")
 
 
-class ShortenerRedirectTests(TestCase):
+class ShortenerRedirectTests(BaseShortenerTestCase):
     def test_redirects_existing_short_code(self) -> None:
         ShortURL.objects.create(original_url="https://www.example.com/landing", short_code="AbC123xY")
 
@@ -207,6 +218,69 @@ class ShortenerRedirectTests(TestCase):
             },
         )
 
-        self.assertEqual(first.status_code, 200)
+        self.assertEqual(first.status_code, 302)
         self.assertEqual(second.status_code, 429)
         self.assertContains(second, "Too many requests", status_code=429)
+
+
+class ShortenerSEOTests(BaseShortenerTestCase):
+    def test_landing_page_renders_seo_tags_and_schema(self) -> None:
+        response = self.client.get(reverse("index"))
+        self.assertEqual(response.status_code, 200)
+
+        # Title & Meta description
+        self.assertContains(response, "<title>Nevatal URL Shortener — Fast, Secure &amp; Modern URL Shortener</title>")
+        self.assertContains(response, '<meta name="description"')
+        self.assertContains(response, '<meta name="keywords"')
+        self.assertContains(response, '<link rel="canonical"')
+
+        # Open Graph & Twitter
+        self.assertContains(response, '<meta property="og:title"')
+        self.assertContains(response, '<meta property="og:description"')
+        self.assertContains(response, '<meta property="og:image"')
+        self.assertContains(response, '<meta name="twitter:card" content="summary_large_image">')
+
+        # Favicons & Manifest
+        self.assertContains(response, 'rel="icon"')
+        self.assertContains(response, 'favicon.')
+        self.assertContains(response, '/site.webmanifest')
+
+        # Structured Data Schema
+        self.assertContains(response, '"@type": "WebApplication"')
+        self.assertContains(response, '"@type": "FAQPage"')
+
+        # Sections
+        self.assertContains(response, 'id="features"')
+        self.assertContains(response, 'id="how-it-works"')
+        self.assertContains(response, 'id="use-cases"')
+        self.assertContains(response, 'id="faq"')
+
+    def test_robots_txt_endpoint(self) -> None:
+        response = self.client.get(reverse("robots_txt"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/plain")
+        self.assertContains(response, "User-agent: *")
+        self.assertContains(response, "Disallow: /admin/")
+        self.assertContains(response, "Sitemap:")
+
+    def test_sitemap_xml_endpoint(self) -> None:
+        response = self.client.get(reverse("sitemap_xml"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/xml")
+        self.assertContains(response, "<urlset")
+        self.assertContains(response, "<loc>")
+
+    def test_site_manifest_endpoint(self) -> None:
+        response = self.client.get(reverse("site_manifest"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        data = response.json()
+        self.assertEqual(data["name"], "Nevatal URL Shortener")
+        self.assertEqual(data["short_name"], "Nevatal")
+
+    def test_reserved_slugs_include_seo_endpoints(self) -> None:
+        from django.conf import settings
+        self.assertIn("robots.txt", settings.RESERVED_SHORT_CODES)
+        self.assertIn("sitemap.xml", settings.RESERVED_SHORT_CODES)
+        self.assertIn("site.webmanifest", settings.RESERVED_SHORT_CODES)
+        self.assertIn("favicon.svg", settings.RESERVED_SHORT_CODES)

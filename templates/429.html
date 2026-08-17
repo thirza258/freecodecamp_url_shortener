@@ -1,13 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Rate Limited · {{ SITE_NAME }}{% endblock %}
+{% block title %}Rate Limit Exceeded (429) · {{ SITE_NAME }}{% endblock %}
+{% block meta_title %}Rate Limit Exceeded (429) · {{ SITE_NAME }}{% endblock %}
+{% block meta_robots %}noindex, nofollow{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-lg-7">
-    <div class="glass-card text-center p-5">
-      <p class="eyebrow">429</p>
-      <h1 class="display-6 fw-semibold mb-3">Too many requests.</h1>
-      <p class="text-secondary mb-4">Your request rate is too high right now. Please wait a moment and try again.</p>
-      <a class="btn btn-primary btn-lg" href="{% url 'index' %}">Return home</a>
+<div class="row justify-content-center py-lg-4">
+  <div class="col-lg-7 col-xl-6">
+    <div class="glass-card text-center p-4 p-lg-5">
+      <span class="eyebrow">[ RATE LIMITED // 429 ]</span>
+      <h1 class="hero-title fs-2 mb-3">Too many requests.</h1>
+      <p class="text-secondary mb-4">
+        Your request rate is currently too high. Please wait a moment and try again.
+      </p>
+      <div class="d-flex justify-content-center gap-2 flex-wrap">
+        <a class="btn btn-primary btn-lg" href="{% url 'index' %}">Return Home</a>
+      </div>
     </div>
   </div>
 </div>

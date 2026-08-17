@@ -18,6 +18,10 @@ urlpatterns = [
     ),
     path("logout/", LogoutView.as_view(next_page="index"), name="logout"),
     path("health/", views.health_check, name="health"),
+    path("robots.txt", views.robots_txt, name="robots_txt"),
+    path("sitemap.xml", views.sitemap_xml, name="sitemap_xml"),
+    path("site.webmanifest", views.site_manifest, name="site_manifest"),
+    path("manifest.json", views.site_manifest, name="manifest_json"),
 ]
 
 reserved = "|".join(re.escape(code) for code in sorted(settings.RESERVED_SHORT_CODES))

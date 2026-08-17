@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#09090b"/>
+  <rect x="40" y="40" width="1120" height="550" fill="#18181b" stroke="#27272a" stroke-width="2" rx="12"/>
+  
+  <!-- Accent top border -->
+  <rect x="40" y="40" width="1120" height="6" fill="#ffffff" rx="3"/>
+  
+  <!-- Brand icon box -->
+  <g transform="translate(100, 110)">
+    <rect width="72" height="72" rx="14" fill="#ffffff"/>
+    <path d="M22 50 L50 22 M28 22 H50 V44" stroke="#09090b" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  
+  <text x="190" y="155" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="32" font-weight="700" letter-spacing="-0.5">NEVATAL</text>
+  <text x="190" y="175" fill="#a1a1aa" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600" letter-spacing="2">URL SHORTENER &amp; ANALYTICS</text>
+  
+  <!-- Headline -->
+  <text x="100" y="290" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="800" letter-spacing="-1.5">Fast, Secure &amp; Precise Link Management.</text>
+  
+  <text x="100" y="350" fill="#d4d4d8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="400">Custom branded slugs • Real-time click tracking • Instant QR codes • &lt;5ms redirect</text>
+  
+  <!-- Stat boxes -->
+  <g transform="translate(100, 420)">
+    <rect width="300" height="110" fill="#09090b" stroke="#3f3f46" stroke-width="1.5" rx="8"/>
+    <text x="24" y="50" fill="#a1a1aa" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="600" letter-spacing="1">CUSTOM SLUGS</text>
+    <text x="24" y="88" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700">nevatal.tech/slug</text>
+  </g>
+  
+  <g transform="translate(430, 420)">
+    <rect width="300" height="110" fill="#09090b" stroke="#3f3f46" stroke-width="1.5" rx="8"/>
+    <text x="24" y="50" fill="#a1a1aa" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="600" letter-spacing="1">REDIRECT SPEED</text>
+    <text x="24" y="88" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700">&lt; 5ms Latency</text>
+  </g>
+  
+  <g transform="translate(760, 420)">
+    <rect width="300" height="110" fill="#09090b" stroke="#3f3f46" stroke-width="1.5" rx="8"/>
+    <text x="24" y="50" fill="#a1a1aa" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="600" letter-spacing="1">ANALYTICS</text>
+    <text x="24" y="88" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700">Live Click Tracking</text>
+  </g>
+</svg>

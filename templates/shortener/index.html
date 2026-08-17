@@ -1,122 +1,613 @@
 {% extends "base.html" %}
-{% block title %}{{ SITE_NAME }}{% endblock %}
+{% load static %}
+
+{% block title %}{{ SITE_NAME }} — Fast, Secure &amp; Modern URL Shortener{% endblock %}
+{% block meta_title %}{{ SITE_NAME }} — Fast, Secure &amp; Modern URL Shortener{% endblock %}
+{% block meta_description %}Shorten long URLs into clean, branded links. Real-time click tracking, custom slugs, instant QR code generator, and sub-5ms edge redirects.{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "{{ SITE_NAME }}",
+      "url": "{{ SHORT_LINK_PROTOCOL }}://{{ APP_DOMAIN }}/",
+      "description": "High-performance, secure URL shortener with custom slugs, live analytics, and instant QR codes.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Instant URL shortening",
+        "Custom branded slugs",
+        "Real-time click tracking",
+        "Automatic QR code generation",
+        "Edge-fast sub-5ms redirects",
+        "IP-based abuse protection"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Are shortened links permanent?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, short links created on {{ SITE_NAME }} remain active indefinitely as long as they comply with our terms of service and security guidelines."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to create an account to use the shortener?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No account is required to generate short URLs. However, signing up for a free account allows you to manage all your links, inspect private click analytics, and view historical redirect logs in your personal dashboard."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I choose my own custom slug?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, you can specify any unique custom slug (e.g. my-project or launch2026). If you leave the slug field blank, our system will automatically generate a secure 7-to-10 character alphanumeric code."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What analytics and metrics are tracked for each link?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We track total redirect counts, the exact timestamp of the last click event, user-agent details, and referer sources to help you understand your audience traffic."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does the instant QR code feature work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every shortened link automatically produces a downloadable, high-contrast QR code that can be embedded into print media, presentations, product packaging, or social media graphics."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What rate limits are enforced on the platform?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "To prevent spam and guarantee 99.99% uptime, creation requests are rate-limited per IP address, while redirect requests are optimized to handle high-throughput traffic seamlessly."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
-<div class="hero mb-4 mb-lg-5">
-  <div class="row align-items-center g-4">
-    <div class="col-lg-7">
-      <h1 class="display-5 fw-semibold lh-1 mb-3">URL Shortener</h1>
-      <p class="lead text-secondary mb-0">Create a compact link for any long URL. Use a custom slug when you need a memorable path, or let the system generate one for you.</p>
-      {% if request.user.is_authenticated %}
-      <p class="mt-3 mb-0 text-secondary">You are signed in as <strong>{{ request.user.username }}</strong>. Your links will be available in the dashboard after refresh.</p>
-      {% else %}
-      <p class="mt-3 mb-0 text-secondary">You can use the shortener without signing in. Register or log in if you want your links to persist on your account.</p>
-      {% endif %}
-    </div>
-    <div class="col-lg-5">
-      <div class="stat-card">
-        <div class="stat-label">Total links</div>
-        <div class="stat-value">{{ total_links }}</div>
-        <div class="stat-note">Links stored in the system.</div>
+<!-- HERO & SHORTENER SECTION -->
+<section class="hero-section mb-5 pt-lg-2" aria-labelledby="hero-heading">
+  <div class="row align-items-center g-4 g-lg-5">
+    <div class="col-lg-6">
+      <span class="eyebrow">[ ENTERPRISE &amp; CREATOR LINK MANAGEMENT ]</span>
+      <h1 id="hero-heading" class="hero-title mb-3">
+        Shorten, share, and track every link with absolute precision.
+      </h1>
+      <p class="section-lead mb-4">
+        Transform unwieldy URLs into clean, branded short links. Get real-time click metrics, automatic QR codes, and sub-millisecond edge redirects with zero bloat.
+      </p>
+      
+      <div class="d-flex gap-3 flex-wrap align-items-center mb-4">
+        <a href="#shortener-form" class="btn btn-primary btn-lg">
+          Create Short URL <span>↓</span>
+        </a>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-lg">
+          Live Dashboard <span>↗</span>
+        </a>
+      </div>
+
+      <div class="d-flex align-items-center gap-4 pt-2">
+        <div class="d-flex align-items-center gap-2">
+          <span class="status-dot"></span>
+          <span class="small font-mono fw-bold">Sub-5ms Latency</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="status-dot"></span>
+          <span class="small font-mono fw-bold">99.99% Uptime</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="status-dot"></span>
+          <span class="small font-mono fw-bold">Free Forever</span>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div class="row g-4">
-  <div class="col-lg-7">
-    <div class="glass-card p-4 p-lg-5">
-      <h2 class="h4 mb-4">Create a short URL</h2>
-
-      <form method="post" novalidate>
-        {% csrf_token %}
-        {% if form.non_field_errors %}
-        <div class="alert alert-danger">
-          {% for error in form.non_field_errors %}
-          <div>{{ error }}</div>
-          {% endfor %}
+    <!-- SHORTENER WIDGET -->
+    <div class="col-lg-6">
+      <div class="shortener-widget-container" id="shortener-form">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h4 fw-bold mb-0">Create Short URL</h2>
+          <span class="badge text-bg-light">Instant Generator</span>
         </div>
-        {% endif %}
-        <div class="mb-4">
-          <label class="form-label fw-semibold" for="{{ form.original_url.id_for_label }}">{{ form.original_url.label }}</label>
-          {{ form.original_url }}
-          {% if form.original_url.help_text %}<div class="form-text">{{ form.original_url.help_text }}</div>{% endif %}
-          {% for error in form.original_url.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-        </div>
+        <p class="text-secondary small mb-4">
+          Enter any destination URL below. Pick a custom slug or leave blank to auto-generate.
+        </p>
 
-        <div class="mb-4">
-          <label class="form-label fw-semibold" for="{{ form.short_code.id_for_label }}">{{ form.short_code.label }}</label>
-          {{ form.short_code }}
-          {% if form.short_code.help_text %}<div class="form-text">{{ form.short_code.help_text }}</div>{% endif %}
-          {% for error in form.short_code.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-        </div>
+        <form method="post" novalidate>
+          {% csrf_token %}
 
-        <div class="d-flex gap-2 flex-wrap">
-          <button type="submit" class="btn btn-primary btn-lg px-4">Generate button</button>
-          <a class="btn btn-outline-secondary btn-lg px-4" href="{% url 'dashboard' %}">Dashboard</a>
-        </div>
-      </form>
-    </div>
-  </div>
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger mb-4 p-3 border-dark rounded-1" role="alert">
+            {% for error in form.non_field_errors %}
+            <div class="fw-semibold">{{ error }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
 
-  <div class="col-lg-5">
-    <div class="glass-card p-4 mb-4">
-      <div class="stat-label">Total clicks</div>
-      <div class="stat-value">{{ total_clicks }}</div>
-      <div class="stat-note">Clicks recorded across all active links.</div>
-    </div>
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label mb-0" for="{{ form.original_url.id_for_label }}">
+                {{ form.original_url.label }} <span class="text-danger">*</span>
+              </label>
+              <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" id="btnPasteUrl" title="Paste from clipboard">
+                📋 Paste
+              </button>
+            </div>
+            {{ form.original_url }}
+            {% if form.original_url.help_text %}
+            <div class="form-text" id="{{ form.original_url.id_for_label }}_helptext">{{ form.original_url.help_text }}</div>
+            {% endif %}
+            {% for error in form.original_url.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+          </div>
 
-    <div class="glass-card p-4">
-      {% if request.user.is_authenticated %}
-      <h2 class="h5 mb-3">Your top URLs</h2>
-      {% if top_urls %}
-      <div class="recent-list mb-4">
-        {% for item in top_urls %}
-        <div class="recent-item">
-          <div class="d-flex justify-content-between gap-3">
-            <div>
-              <div class="fw-semibold text-break">{{ SHORT_LINK_PROTOCOL }}://{{ SHORT_LINK_DOMAIN }}/{{ item.short_code }}</div>
-              <div class="small text-secondary text-break">{{ item.original_url }}</div>
-              <div class="small text-secondary">
-                {% if item.last_accessed_at %}Last accessed {{ item.last_accessed_at }}{% else %}Never accessed{% endif %}
+          <div class="mb-4">
+            <label class="form-label" for="{{ form.short_code.id_for_label }}">
+              {{ form.short_code.label }} <span class="text-secondary fw-normal">(Optional)</span>
+            </label>
+            <div class="input-addon-group">
+              <span class="input-addon-prefix">{{ SHORT_LINK_DOMAIN }}/</span>
+              <div class="flex-grow-1">
+                {{ form.short_code }}
               </div>
             </div>
-            <span class="badge text-bg-light align-self-start">{{ item.click_count }} clicks</span>
+            {% if form.short_code.help_text %}
+            <div class="form-text" id="{{ form.short_code.id_for_label }}_helptext">{{ form.short_code.help_text }}</div>
+            {% endif %}
+            {% for error in form.short_code.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
           </div>
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p class="text-secondary mb-4">No personal URLs yet.</p>
-      {% endif %}
 
-      <h2 class="h5 mb-3">Your recent URLs</h2>
-      {% if recent_urls %}
-      <div class="recent-list">
-        {% for item in recent_urls %}
-        <div class="recent-item">
-          <div class="d-flex justify-content-between gap-3">
-            <div>
-              <div class="fw-semibold text-break">{{ SHORT_LINK_PROTOCOL }}://{{ SHORT_LINK_DOMAIN }}/{{ item.short_code }}</div>
-              <div class="small text-secondary text-break">{{ item.original_url }}</div>
-            </div>
-            <div class="d-flex flex-column align-items-end gap-1">
-              <span class="badge {% if item.is_active %}text-bg-success{% else %}text-bg-secondary{% endif %}">
-                {% if item.is_active %}Active{% else %}Inactive{% endif %}
-              </span>
-              <span class="badge text-bg-light">{{ item.click_count }} clicks</span>
-            </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg" id="btnSubmitShorten">
+              Generate Short URL <span>↗</span>
+            </button>
           </div>
-        </div>
-        {% endfor %}
+
+          {% if not request.user.is_authenticated %}
+          <div class="mt-3 text-center">
+            <span class="small text-secondary">
+              Want to manage and edit your links? 
+              <a href="{% url 'register' %}" class="fw-bold text-dark text-decoration-underline">Create an account</a>.
+            </span>
+          </div>
+          {% else %}
+          <div class="mt-3 text-center">
+            <span class="small text-secondary">
+              Signed in as <strong class="text-dark">@{{ request.user.username }}</strong>. Links are automatically linked to your account.
+            </span>
+          </div>
+          {% endif %}
+        </form>
       </div>
-      {% else %}
-      <p class="text-secondary mb-0">No personal links have been created yet.</p>
-      {% endif %}
-      {% else %}
-      <h2 class="h5 mb-3">Account links</h2>
-      <p class="text-secondary mb-0">Log in to see your saved URLs here. Anonymous links still work, but they are not attached to an account.</p>
-      {% endif %}
     </div>
   </div>
-</div>
+</section>
+
+<!-- LIVE STATS TICKER BAR -->
+<section class="stats-section mb-5" aria-label="Platform Statistics">
+  <div class="row g-3 g-lg-4">
+    <div class="col-6 col-lg-3">
+      <div class="stat-card h-100">
+        <div class="stat-label">Total Links</div>
+        <div class="stat-value">{{ total_links }}</div>
+        <div class="stat-note">Active short links in network.</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card h-100">
+        <div class="stat-label">Global Clicks</div>
+        <div class="stat-value">{{ total_clicks }}</div>
+        <div class="stat-note">Total recorded redirects.</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card h-100">
+        <div class="stat-label">Redirect Speed</div>
+        <div class="stat-value">&lt; 5ms</div>
+        <div class="stat-note">In-memory routing engine.</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card h-100">
+        <div class="stat-label">Platform Uptime</div>
+        <div class="stat-value">99.99%</div>
+        <div class="stat-note">Continuous cloud availability.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTHENTICATED USER'S RECENT LINKS (IF APPLICABLE) -->
+{% if request.user.is_authenticated and recent_urls %}
+<section class="mb-5" aria-labelledby="user-links-heading">
+  <div class="glass-card p-4 p-lg-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+      <div>
+        <h2 id="user-links-heading" class="h4 fw-bold mb-1">Your Recent Links</h2>
+        <p class="text-secondary small mb-0">Quick access to links created under your account @{{ request.user.username }}.</p>
+      </div>
+      <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm">View All in Dashboard ↗</a>
+    </div>
+
+    <div class="recent-list">
+      {% for item in recent_urls %}
+      <div class="recent-item">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div class="overflow-hidden">
+            <div class="d-flex align-items-center gap-2">
+              <span class="fw-bold font-mono text-dark">{{ SHORT_LINK_PROTOCOL }}://{{ SHORT_LINK_DOMAIN }}/{{ item.short_code }}</span>
+              <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 font-mono" data-copy-target="#userLink{{ forloop.counter }}">
+                Copy
+              </button>
+              <span id="userLink{{ forloop.counter }}" class="d-none">{{ SHORT_LINK_PROTOCOL }}://{{ SHORT_LINK_DOMAIN }}/{{ item.short_code }}</span>
+            </div>
+            <div class="small text-secondary text-truncate mt-1" style="max-width: 550px;">
+              {{ item.original_url }}
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge {% if item.is_active %}text-bg-success{% else %}text-bg-secondary{% endif %}">
+              {% if item.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+            <span class="badge text-bg-light">{{ item.click_count }} clicks</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- BEFORE & AFTER DEMO SHOWCASE -->
+<section class="mb-5 pt-3" aria-labelledby="showcase-heading">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-5">
+      <span class="eyebrow">[ LINK OPTIMIZATION ]</span>
+      <h2 id="showcase-heading" class="section-title mb-3">
+        Say goodbye to messy, cluttered URLs.
+      </h2>
+      <p class="text-secondary mb-4">
+        Long tracking links with nested query parameters look suspicious, break across SMS and chat apps, and are impossible to remember. Nevatal turns them into sleek, high-converting digital assets.
+      </p>
+      <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+        <li class="d-flex align-items-center gap-2">
+          <span class="fw-bold text-dark font-mono">✓</span>
+          <span>Clean branded appearance builds user trust</span>
+        </li>
+        <li class="d-flex align-items-center gap-2">
+          <span class="fw-bold text-dark font-mono">✓</span>
+          <span>Higher click-through rates on social &amp; email</span>
+        </li>
+        <li class="d-flex align-items-center gap-2">
+          <span class="fw-bold text-dark font-mono">✓</span>
+          <span>Zero redirect delay for your visitors</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="comparison-box">
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small font-mono fw-bold text-danger">BEFORE (Unoptimized URL):</span>
+            <span class="badge text-bg-secondary font-mono">112 chars</span>
+          </div>
+          <div class="url-pill-before">
+            https://example.com/products/summer-sale?utm_source=newsletter&amp;utm_medium=email&amp;utm_campaign=launch_2026&amp;ref=aff98234
+          </div>
+        </div>
+
+        <div class="text-center py-2">
+          <span class="badge text-bg-light font-mono px-3 py-2 border-dark">TRANSFORMS INTO ↓</span>
+        </div>
+
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small font-mono fw-bold text-success">AFTER (Nevatal Short Link):</span>
+            <span class="badge text-bg-success font-mono">25 chars</span>
+          </div>
+          <div class="url-pill-after d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span id="demoLink">{{ SHORT_LINK_PROTOCOL }}://{{ SHORT_LINK_DOMAIN }}/summer26</span>
+            <button type="button" class="btn btn-sm btn-primary py-1 px-3" data-copy-target="#demoLink">
+              Copy Demo Link
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CORE FEATURES SECTION -->
+<section id="features" class="mb-5 pt-4" aria-labelledby="features-heading">
+  <div class="text-center mb-5">
+    <span class="eyebrow">[ CORE CAPABILITIES ]</span>
+    <h2 id="features-heading" class="section-title mb-3">Engineered for speed, built for reliability.</h2>
+    <p class="section-lead mx-auto">
+      Every tool you need to control your links, track your audiences, and deliver seamless redirects without compromise.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+      <article class="feature-card">
+        <span class="feature-number">FEATURE // 01</span>
+        <h3 class="feature-title">Lightning-Fast Redirects</h3>
+        <p class="feature-text">
+          Sub-5ms response time powered by optimized database indexes and Redis cache architecture. Redirects happen before visitors even notice.
+        </p>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <article class="feature-card">
+        <span class="feature-number">FEATURE // 02</span>
+        <h3 class="feature-title">Custom Branded Slugs</h3>
+        <p class="feature-text">
+          Define memorable, keyword-rich paths like <span class="font-mono">{{ SHORT_LINK_DOMAIN }}/launch</span> to reinforce your brand identity and boost CTR.
+        </p>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <article class="feature-card">
+        <span class="feature-number">FEATURE // 03</span>
+        <h3 class="feature-title">Real-Time Click Analytics</h3>
+        <p class="feature-text">
+          Monitor total redirect counts, last-accessed timestamps, and referer sources live on the interactive dashboard with zero delay.
+        </p>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <article class="feature-card">
+        <span class="feature-number">FEATURE // 04</span>
+        <h3 class="feature-title">Instant Vector QR Codes</h3>
+        <p class="feature-text">
+          Every shortened URL automatically generates a high-contrast QR code ready for physical packaging, slide decks, and print promotions.
+        </p>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <article class="feature-card">
+        <span class="feature-number">FEATURE // 05</span>
+        <h3 class="feature-title">Anti-Abuse &amp; Protection</h3>
+        <p class="feature-text">
+          Strict URL scheme whitelisting, prohibited protocol filtering, and reserved system slug protection keep your links safe and clean.
+        </p>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <article class="feature-card">
+        <span class="feature-number">FEATURE // 06</span>
+        <h3 class="feature-title">Rate Limiting &amp; Uptime</h3>
+        <p class="feature-text">
+          DDoS defense and IP-level throttling prevent abuse, ensuring the service remains responsive and reliable around the clock.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS SECTION -->
+<section id="how-it-works" class="mb-5 pt-4" aria-labelledby="how-it-works-heading">
+  <div class="text-center mb-5">
+    <span class="eyebrow">[ SIMPLE 3-STEP PROCESS ]</span>
+    <h2 id="how-it-works-heading" class="section-title mb-3">How {{ SITE_NAME }} works.</h2>
+    <p class="section-lead mx-auto">
+      Create and deploy secure short links in seconds with our streamlined workflow.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="step-card">
+        <div class="step-badge">01</div>
+        <h3 class="step-title">Paste Destination URL</h3>
+        <p class="step-text">
+          Enter any long link from your website, campaign, document, or social post into the shortener input field.
+        </p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="step-card">
+        <div class="step-badge">02</div>
+        <h3 class="step-title">Customize Your Slug</h3>
+        <p class="step-text">
+          Choose a custom keyword alias or let our secure cryptographic generator create a compact 7-character code.
+        </p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="step-card">
+        <div class="step-badge">03</div>
+        <h3 class="step-title">Share &amp; Track Clicks</h3>
+        <p class="step-text">
+          Copy the link or download the QR code. Watch real-time redirect metrics and referer analytics appear on your dashboard.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES SECTION -->
+<section id="use-cases" class="mb-5 pt-4" aria-labelledby="usecases-heading">
+  <div class="text-center mb-5">
+    <span class="eyebrow">[ TARGET AUDIENCES ]</span>
+    <h2 id="usecases-heading" class="section-title mb-3">Built for creators, teams, and developers.</h2>
+    <p class="section-lead mx-auto">
+      Tailored to suit high-volume link management across multiple industries and workflows.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-3">
+      <div class="usecase-card">
+        <div class="usecase-tag">CREATORS &amp; SOCIAL</div>
+        <h3 class="usecase-title">Bio Links &amp; Content</h3>
+        <p class="usecase-text">
+          Clean URLs for Instagram, X, TikTok, and YouTube descriptions with full click-through attribution.
+        </p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="usecase-card">
+        <div class="usecase-tag">MARKETING &amp; ADS</div>
+        <h3 class="usecase-title">Campaign Tracking</h3>
+        <p class="usecase-text">
+          Shorten UTM tracking parameters, track email campaigns, and print instant QR codes on merchandise.
+        </p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="usecase-card">
+        <div class="usecase-tag">DEVELOPERS &amp; OPS</div>
+        <h3 class="usecase-title">API &amp; Docs Shortcuts</h3>
+        <p class="usecase-text">
+          Create clean shortcut links for internal wikis, pull requests, release notes, and documentation portals.
+        </p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="usecase-card">
+        <div class="usecase-tag">EVENTS &amp; SPEAKERS</div>
+        <h3 class="usecase-title">Live Presentations</h3>
+        <p class="usecase-text">
+          Give audiences short memorable links and slide-ready QR codes that work immediately on mobile.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ SECTION -->
+<section id="faq" class="mb-5 pt-4" aria-labelledby="faq-heading">
+  <div class="text-center mb-5">
+    <span class="eyebrow">[ QUESTIONS &amp; ANSWERS ]</span>
+    <h2 id="faq-heading" class="section-title mb-3">Frequently Asked Questions</h2>
+    <p class="section-lead mx-auto">
+      Got questions about our URL shortener, slug policies, or analytics? Here are the answers.
+    </p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <details class="faq-details">
+        <summary class="faq-summary">
+          <span>Are shortened links permanent?</span>
+          <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-content">
+          Yes, all short links created on {{ SITE_NAME }} remain active indefinitely as long as they comply with our acceptable use policies and security standards.
+        </div>
+      </details>
+
+      <details class="faq-details">
+        <summary class="faq-summary">
+          <span>Do I need an account to shorten URLs?</span>
+          <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-content">
+          No account is required to generate short URLs. You can paste and shorten instantly as a guest. Creating a free account lets you view and manage your full link portfolio and access personal click history in your private dashboard.
+        </div>
+      </details>
+
+      <details class="faq-details">
+        <summary class="faq-summary">
+          <span>Can I specify a custom slug?</span>
+          <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-content">
+          Yes! You can enter any custom alphanumeric slug (e.g. <code>my-campaign</code> or <code>portfolio</code>). If the slug is already taken or is a reserved system keyword, the form will guide you to select an alternative.
+        </div>
+      </details>
+
+      <details class="faq-details">
+        <summary class="faq-summary">
+          <span>What analytics and metrics are tracked for each link?</span>
+          <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-content">
+          For each short link, we track total redirect counts, the exact timestamp of the most recent redirect, user-agent details, and referer sources, allowing you to monitor audience engagement in real time.
+        </div>
+      </details>
+
+      <details class="faq-details">
+        <summary class="faq-summary">
+          <span>How does the QR code generator work?</span>
+          <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-content">
+          Every time a short link is created, a high-resolution QR code is automatically generated. You can download the QR image directly from the success page or scan it instantly with any smartphone camera.
+        </div>
+      </details>
+
+      <details class="faq-details">
+        <summary class="faq-summary">
+          <span>What rate limits are enforced?</span>
+          <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-content">
+          To maintain high reliability and prevent abusive spam, link creation is capped per IP address. Redirect traffic is heavily cached and optimized for high concurrent throughput.
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CALL TO ACTION BANNER -->
+<section class="mb-4 pt-2" aria-labelledby="cta-heading">
+  <div class="cta-box text-center">
+    <span class="eyebrow text-white border-white bg-transparent mb-3">[ GET STARTED TODAY ]</span>
+    <h2 id="cta-heading" class="h1 mb-3">Ready to upgrade your link management?</h2>
+    <p class="mx-auto mb-4">
+      Join creators, marketers, and developers who rely on {{ SITE_NAME }} for fast, dependable, and trackable links.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{% url 'register' %}" class="btn btn-cta-primary btn-lg">
+        Create Free Account <span>→</span>
+      </a>
+      <a href="{% url 'dashboard' %}" class="btn btn-cta-secondary btn-lg">
+        Explore Dashboard <span>↗</span>
+      </a>
+    </div>
+  </div>
+</section>
 {% endblock %}

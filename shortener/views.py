@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from django.conf import settings
 from django.contrib.auth import login as auth_login
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db.models import F, Sum
-from django.http import Http404, HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django_ratelimit.decorators import ratelimit
@@ -163,3 +164,78 @@ def not_found(request: HttpRequest, exception: Exception | None = None) -> HttpR
 
 def server_error(request: HttpRequest) -> HttpResponse:
     return render(request, "500.html", status=500)
+
+
+def robots_txt(_request: HttpRequest) -> HttpResponse:
+    domain = settings.APP_DOMAIN
+    protocol = settings.SHORT_LINK_PROTOCOL
+    content = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /admin/\n"
+        "Disallow: /logout/\n"
+        "Disallow: /health/\n\n"
+        f"Sitemap: {protocol}://{domain}/sitemap.xml\n"
+    )
+    return HttpResponse(content, content_type="text/plain")
+
+
+def sitemap_xml(_request: HttpRequest) -> HttpResponse:
+    domain = settings.APP_DOMAIN
+    protocol = settings.SHORT_LINK_PROTOCOL
+    base_url = f"{protocol}://{domain}"
+    now = timezone.now().strftime("%Y-%m-%d")
+    xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>{base_url}/</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>{base_url}/dashboard/</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>{base_url}/login/</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>{base_url}/register/</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>"""
+    return HttpResponse(xml_content.strip(), content_type="application/xml")
+
+
+def site_manifest(_request: HttpRequest) -> JsonResponse:
+    data = {
+        "name": settings.SITE_NAME,
+        "short_name": "Nevatal",
+        "description": "Fast, secure, and modern URL shortener with custom slugs and live analytics.",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#ffffff",
+        "theme_color": "#09090b",
+        "icons": [
+            {
+                "src": "/static/img/favicon.svg",
+                "sizes": "any",
+                "type": "image/svg+xml",
+                "purpose": "any maskable",
+            },
+            {
+                "src": "/static/img/apple-touch-icon.png",
+                "sizes": "180x180",
+                "type": "image/png",
+            },
+        ],
+    }
+    return JsonResponse(data)

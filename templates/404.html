@@ -1,13 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Not Found · {{ SITE_NAME }}{% endblock %}
+{% block title %}Page Not Found (404) · {{ SITE_NAME }}{% endblock %}
+{% block meta_title %}Page Not Found (404) · {{ SITE_NAME }}{% endblock %}
+{% block meta_robots %}noindex, nofollow{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-lg-7">
-    <div class="glass-card text-center p-5">
-      <p class="eyebrow">404</p>
-      <h1 class="display-6 fw-semibold mb-3">This link does not exist.</h1>
-      <p class="text-secondary mb-4">The short code you requested could not be found. Check the link or create a new one from the home page.</p>
-      <a class="btn btn-primary btn-lg" href="{% url 'index' %}">Go home</a>
+<div class="row justify-content-center py-lg-4">
+  <div class="col-lg-7 col-xl-6">
+    <div class="glass-card text-center p-4 p-lg-5">
+      <span class="eyebrow">[ ERROR // 404 ]</span>
+      <h1 class="hero-title fs-2 mb-3">This link does not exist.</h1>
+      <p class="text-secondary mb-4">
+        The short code or page you requested could not be found. Check the link or generate a new short URL from the home page.
+      </p>
+      <div class="d-flex justify-content-center gap-2 flex-wrap">
+        <a class="btn btn-primary btn-lg" href="{% url 'index' %}">Return Home</a>
+        <a class="btn btn-outline-secondary btn-lg" href="{% url 'dashboard' %}">View Dashboard</a>
+      </div>
     </div>
   </div>
 </div>

@@ -10,7 +10,7 @@ from .validators import SHORT_CODE_VALIDATOR, normalize_short_code, validate_htt
 
 
 class ShortURLForm(forms.Form):
-    original_url = forms.URLField(
+    original_url = forms.CharField(
         label="Original URL",
         widget=forms.URLInput(
             attrs={
@@ -19,6 +19,7 @@ class ShortURLForm(forms.Form):
                 "autocomplete": "off",
             }
         ),
+        validators=[validate_http_https_url],
         help_text="Paste the full destination URL.",
     )
     short_code = forms.CharField(

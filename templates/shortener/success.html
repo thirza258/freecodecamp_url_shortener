@@ -1,28 +1,64 @@
 {% extends "base.html" %}
-{% block title %}Short URL Created · {{ SITE_NAME }}{% endblock %}
-{% block content %}
-<div class="row justify-content-center">
-  <div class="col-lg-8">
-    <div class="glass-card p-4 p-lg-5">
-      <p class="eyebrow">Success</p>
-      <h1 class="display-6 fw-semibold mb-3">Your short URL is ready.</h1>
-      <p class="text-secondary mb-4">Copy the link below or scan the QR code to open it on another device.</p>
+{% block title %}Short URL Ready · {{ SITE_NAME }}{% endblock %}
+{% block meta_title %}Short URL Ready · {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}Your short link has been successfully generated on {{ SITE_NAME }}.{% endblock %}
+{% block meta_robots %}noindex, follow{% endblock %}
 
-      <div class="row g-4 align-items-center">
+{% block content %}
+<div class="row justify-content-center py-lg-4">
+  <div class="col-lg-9 col-xl-8">
+    <div class="glass-card p-4 p-lg-5">
+      <span class="eyebrow">[ SUCCESS // LINK CREATED ]</span>
+      <h1 class="hero-title fs-2 mb-2">Your short URL is live.</h1>
+      <p class="text-secondary mb-4">
+        Your link has been compiled and is ready for distribution across all channels.
+      </p>
+
+      <div class="row g-4 align-items-center mb-4">
         <div class="col-md-7">
-          <div class="short-link-box mb-3">
-            <div class="small text-uppercase text-secondary mb-1">Generated short URL</div>
-            <div class="fw-semibold text-break" id="successShortUrl">{{ short_link }}</div>
+          <div class="short-link-box mb-4">
+            <div class="small text-uppercase text-secondary fw-bold font-mono mb-1">Generated Short Link</div>
+            <div class="short-link-display mb-2" id="successShortUrl">{{ short_link }}</div>
+            <div class="small text-secondary text-truncate font-mono">
+              Destination: {{ short_url.original_url }}
+            </div>
           </div>
-          <div class="d-flex gap-2 flex-wrap">
-            <button type="button" class="btn btn-primary" data-copy-target="#successShortUrl">Copy button</button>
-            <a class="btn btn-outline-secondary" href="{{ short_link }}" target="_blank" rel="noopener">Open</a>
-            <a class="btn btn-outline-primary" href="{% url 'dashboard' %}">Dashboard</a>
+
+          <div class="d-flex gap-2 flex-wrap mb-3">
+            <button type="button" class="btn btn-primary btn-lg" data-copy-target="#successShortUrl" id="btnCopySuccess">
+              📋 Copy Link
+            </button>
+            <a class="btn btn-outline-secondary btn-lg" href="{{ short_link }}" target="_blank" rel="noopener noreferrer">
+              Open Link ↗
+            </a>
+            <a class="btn btn-outline-primary btn-lg" href="{% url 'dashboard' %}">
+              Dashboard
+            </a>
+          </div>
+
+          <div class="pt-2">
+            <a href="{% url 'index' %}" class="small text-secondary text-decoration-underline">
+              ← Shorten another URL
+            </a>
           </div>
         </div>
+
         <div class="col-md-5 text-center">
-          <img src="{{ qr_code_data_uri }}" alt="QR code for {{ short_link }}" class="img-fluid rounded-4 shadow-sm qr-code">
+          <div class="qr-container">
+            <img src="{{ qr_code_data_uri }}" alt="QR code for {{ short_link }}" class="qr-code-image img-fluid mb-3">
+            <div>
+              <button type="button" class="btn btn-outline-secondary btn-sm font-mono w-100" id="btnDownloadQr">
+                ⬇ Download QR (PNG)
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="border-top pt-3 mt-2 d-flex justify-content-between align-items-center flex-wrap gap-2 text-secondary small font-mono">
+        <span>Slug: {{ short_url.short_code }}</span>
+        <span>Created: {{ short_url.created_at|date:"Y-m-d H:i:s" }} UTC</span>
+        <span>Status: {% if short_url.is_active %}Active{% else %}Inactive{% endif %}</span>
       </div>
     </div>
   </div>

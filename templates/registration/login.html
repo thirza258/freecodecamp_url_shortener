@@ -1,42 +1,62 @@
 {% extends "base.html" %}
-{% block title %}Login · {{ SITE_NAME }}{% endblock %}
+{% block title %}Sign In · {{ SITE_NAME }}{% endblock %}
+{% block meta_title %}Sign In · {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}Sign in to {{ SITE_NAME }} to access your link analytics, manage custom slugs, and view redirect logs.{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center py-lg-4">
   <div class="col-lg-6 col-xl-5">
     <div class="glass-card p-4 p-lg-5">
-      <p class="eyebrow">Login</p>
-      <h1 class="h2 fw-semibold mb-3">Sign in to resume your links.</h1>
-      <p class="text-secondary mb-4">Use your username and password. No email is required.</p>
+      <span class="eyebrow">[ ACCOUNT ACCESS ]</span>
+      <h1 class="h2 fw-bold mb-2">Sign in to your account.</h1>
+      <p class="text-secondary small mb-4">Enter your username and password to resume managing your links.</p>
 
       <form method="post" novalidate>
         {% csrf_token %}
+        
         {% if form.non_field_errors %}
-        <div class="alert alert-danger">
+        <div class="alert alert-danger mb-4 p-3 border-dark rounded-1" role="alert">
           {% for error in form.non_field_errors %}
-          <div>{{ error }}</div>
+          <div class="fw-semibold">{{ error }}</div>
           {% endfor %}
         </div>
         {% endif %}
 
         <div class="mb-3">
-          <label class="form-label fw-semibold" for="{{ form.username.id_for_label }}">{{ form.username.label|default:"Username" }}</label>
+          <label class="form-label" for="{{ form.username.id_for_label }}">
+            {{ form.username.label|default:"Username" }} <span class="text-danger">*</span>
+          </label>
           {{ form.username }}
-          {% for error in form.username.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+          {% for error in form.username.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+          {% endfor %}
         </div>
 
         <div class="mb-4">
-          <label class="form-label fw-semibold" for="{{ form.password.id_for_label }}">{{ form.password.label|default:"Password" }}</label>
+          <label class="form-label" for="{{ form.password.id_for_label }}">
+            {{ form.password.label|default:"Password" }} <span class="text-danger">*</span>
+          </label>
           {{ form.password }}
-          {% for error in form.password.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+          {% for error in form.password.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+          {% endfor %}
         </div>
 
         {% if next %}
         <input type="hidden" name="next" value="{{ next }}">
         {% endif %}
 
-        <div class="d-flex gap-2 flex-wrap">
-          <button type="submit" class="btn btn-primary btn-lg px-4">Login</button>
-          <a class="btn btn-outline-secondary btn-lg px-4" href="{% url 'register' %}">Register</a>
+        <div class="d-grid gap-2 mb-4">
+          <button type="submit" class="btn btn-primary btn-lg">
+            Sign In <span>→</span>
+          </button>
+        </div>
+
+        <div class="border-top pt-3 text-center">
+          <span class="text-secondary small">
+            Don't have an account? 
+            <a class="fw-bold text-dark text-decoration-underline" href="{% url 'register' %}">Create account</a>.
+          </span>
         </div>
       </form>
     </div>
