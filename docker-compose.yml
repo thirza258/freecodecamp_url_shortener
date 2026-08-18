@@ -28,7 +28,7 @@ services:
       SECRET_KEY: ${SECRET_KEY:-change-me}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,url.nevatal.tech,nevatal.tech}
       DOMAIN_NAME: ${DOMAIN_NAME:-url.nevatal.tech}
-      PUBLIC_SHORT_DOMAIN: ${PUBLIC_SHORT_DOMAIN:-nevatal.tech}
+      PUBLIC_SHORT_DOMAIN: ${PUBLIC_SHORT_DOMAIN:-url.nevatal.tech}
       POSTGRES_DB: ${POSTGRES_DB:-nevatal_url_shortener}
       POSTGRES_USER: ${POSTGRES_USER:-nevatal}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nevatal}

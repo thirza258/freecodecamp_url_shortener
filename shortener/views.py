@@ -172,12 +172,15 @@ def robots_txt(_request: HttpRequest) -> HttpResponse:
     content = (
         "User-agent: *\n"
         "Allow: /\n"
+        "Allow: /static/\n"
         "Disallow: /admin/\n"
         "Disallow: /logout/\n"
-        "Disallow: /health/\n\n"
+        "Disallow: /health/\n"
+        "Disallow: /success/\n\n"
+        f"Host: {domain}\n"
         f"Sitemap: {protocol}://{domain}/sitemap.xml\n"
     )
-    return HttpResponse(content, content_type="text/plain")
+    return HttpResponse(content.strip() + "\n", content_type="text/plain; charset=utf-8")
 
 
 def sitemap_xml(_request: HttpRequest) -> HttpResponse:
@@ -186,7 +189,10 @@ def sitemap_xml(_request: HttpRequest) -> HttpResponse:
     base_url = f"{protocol}://{domain}"
     now = timezone.now().strftime("%Y-%m-%d")
     xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
     <loc>{base_url}/</loc>
     <lastmod>{now}</lastmod>
@@ -196,7 +202,7 @@ def sitemap_xml(_request: HttpRequest) -> HttpResponse:
   <url>
     <loc>{base_url}/dashboard/</loc>
     <lastmod>{now}</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
@@ -209,10 +215,10 @@ def sitemap_xml(_request: HttpRequest) -> HttpResponse:
     <loc>{base_url}/register/</loc>
     <lastmod>{now}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
   </url>
 </urlset>"""
-    return HttpResponse(xml_content.strip(), content_type="application/xml")
+    return HttpResponse(xml_content.strip(), content_type="application/xml; charset=utf-8")
 
 
 def site_manifest(_request: HttpRequest) -> JsonResponse:

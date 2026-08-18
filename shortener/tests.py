@@ -187,7 +187,7 @@ class ShortenerRedirectTests(BaseShortenerTestCase):
         response = self.client.get(reverse("success", kwargs={"short_code": "success123"}))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "https://nevatal.tech/success123")
+        self.assertContains(response, "https://url.nevatal.tech/success123")
         self.assertContains(response, "data:image/png;base64,")
 
     @override_settings(SHORTENER_REDIRECT_RATE_LIMIT="1/m")
@@ -258,7 +258,7 @@ class ShortenerSEOTests(BaseShortenerTestCase):
     def test_robots_txt_endpoint(self) -> None:
         response = self.client.get(reverse("robots_txt"))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "text/plain")
+        self.assertIn("text/plain", response["Content-Type"])
         self.assertContains(response, "User-agent: *")
         self.assertContains(response, "Disallow: /admin/")
         self.assertContains(response, "Sitemap:")
@@ -266,7 +266,7 @@ class ShortenerSEOTests(BaseShortenerTestCase):
     def test_sitemap_xml_endpoint(self) -> None:
         response = self.client.get(reverse("sitemap_xml"))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/xml")
+        self.assertIn("application/xml", response["Content-Type"])
         self.assertContains(response, "<urlset")
         self.assertContains(response, "<loc>")
 

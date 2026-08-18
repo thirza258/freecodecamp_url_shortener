@@ -21,6 +21,8 @@
     <meta property="og:title" content="{% block og_title %}{{ SITE_NAME }} — Fast, Secure &amp; Modern URL Shortener{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{{ SHORT_LINK_PROTOCOL }}://{{ APP_DOMAIN }}{% static 'img/og-preview.png' %}{% endblock %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Nevatal URL Shortener &amp; Analytics Platform">
     <meta property="og:site_name" content="{{ SITE_NAME }}">
     <meta property="og:locale" content="en_US">
@@ -31,6 +33,7 @@
     <meta name="twitter:title" content="{% block twitter_title %}{{ SITE_NAME }} — Fast, Secure &amp; Modern URL Shortener{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
     <meta name="twitter:image" content="{% block twitter_image %}{{ SHORT_LINK_PROTOCOL }}://{{ APP_DOMAIN }}{% static 'img/og-preview.png' %}{% endblock %}">
+    <meta name="twitter:image:alt" content="Nevatal URL Shortener &amp; Analytics Platform">
 
     <!-- Favicon and Icons -->
     <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
@@ -126,6 +129,17 @@
 
       <!-- MAIN CONTENT -->
       <main id="main-content" class="container py-4 py-lg-5 flex-grow-1">
+        {% if messages %}
+        <div class="mb-4">
+          {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show border-dark rounded-1" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
         {% block content %}{% endblock %}
       </main>
 

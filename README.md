@@ -7,7 +7,7 @@ Production-ready Django URL shortener with server-rendered Bootstrap 5 UI.
 - Shorten long URLs
 - Optional custom slugs
 - Duplicate slug prevention with database uniqueness and form validation
-- Root-path redirects for `https://nevatal.tech/<short_code>`
+- Root-path redirects for `https://url.nevatal.tech/<short_code>`
 - Click analytics, last-accessed timestamps, and dashboard stats
 - Request rate limiting with friendly 429 responses
 - Production Docker deployment with PostgreSQL 16 Alpine and Redis
@@ -62,12 +62,12 @@ The app expects these variables:
 The Compose file provides sane defaults for local development:
 
 - Main app domain: `url.nevatal.tech`
-- Public short-link domain: `nevatal.tech`
+- Public short-link domain: `url.nevatal.tech`
 
 ## URL structure
 
 - Main site: `https://url.nevatal.tech`
-- Public short links: `https://nevatal.tech/<short_code>`
+- Public short links: `https://url.nevatal.tech/<short_code>`
 
 ## Notes
 

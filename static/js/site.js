@@ -50,8 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
         textArea.remove();
       }
 
-      const originalHtml = button.innerHTML;
-      button.setAttribute("data-original-html", originalHtml);
+      if (!button.hasAttribute("data-original-html")) {
+        button.setAttribute("data-original-html", button.innerHTML);
+      }
+      const originalHtml = button.getAttribute("data-original-html");
       button.innerHTML = "<span>✓ Copied!</span>";
       button.classList.add("btn-success");
       showToast("Short link copied to clipboard!");

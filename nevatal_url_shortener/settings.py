@@ -36,7 +36,7 @@ if not SECRET_KEY:
 
 SITE_NAME = os.getenv("SITE_NAME", "Nevatal URL Shortener")
 APP_DOMAIN = os.getenv("APP_DOMAIN", os.getenv("DOMAIN_NAME", "url.nevatal.tech"))
-SHORT_LINK_DOMAIN = os.getenv("SHORT_LINK_DOMAIN", os.getenv("PUBLIC_SHORT_DOMAIN", "nevatal.tech"))
+SHORT_LINK_DOMAIN = os.getenv("SHORT_LINK_DOMAIN", os.getenv("PUBLIC_SHORT_DOMAIN", "url.nevatal.tech"))
 SHORT_LINK_PROTOCOL = os.getenv("SHORT_LINK_PROTOCOL", "https")
 SHORT_CODE_LENGTH_MIN = int(os.getenv("SHORT_CODE_LENGTH_MIN", "7"))
 SHORT_CODE_LENGTH_MAX = int(os.getenv("SHORT_CODE_LENGTH_MAX", "10"))
