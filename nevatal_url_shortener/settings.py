@@ -35,8 +35,8 @@ if not SECRET_KEY:
         raise RuntimeError("Missing required environment variable: SECRET_KEY")
 
 SITE_NAME = os.getenv("SITE_NAME", "Nevatal URL Shortener")
-APP_DOMAIN = os.getenv("APP_DOMAIN", os.getenv("DOMAIN_NAME", "url.nevatal.tech"))
-SHORT_LINK_DOMAIN = os.getenv("SHORT_LINK_DOMAIN", os.getenv("PUBLIC_SHORT_DOMAIN", "url.nevatal.tech"))
+APP_DOMAIN = os.getenv("APP_DOMAIN", os.getenv("DOMAIN_NAME", "url.nevatal.id"))
+SHORT_LINK_DOMAIN = os.getenv("SHORT_LINK_DOMAIN", os.getenv("PUBLIC_SHORT_DOMAIN", "url.nevatal.id"))
 SHORT_LINK_PROTOCOL = os.getenv("SHORT_LINK_PROTOCOL", "https")
 SHORT_CODE_LENGTH_MIN = int(os.getenv("SHORT_CODE_LENGTH_MIN", "7"))
 SHORT_CODE_LENGTH_MAX = int(os.getenv("SHORT_CODE_LENGTH_MAX", "10"))
@@ -98,7 +98,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "nevatal_url_shortener.middleware.FrameAncestorsMiddleware",
 ]
 
 ROOT_URLCONF = "nevatal_url_shortener.urls"
@@ -224,8 +224,11 @@ STORAGES = {
 }
 WHITENOISE_MANIFEST_STRICT = False
 SECURE_CONTENT_TYPE_NOSNIFF = True
-CSRF_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SAMESITE = "Lax"
+# SameSite is env-overridable so the site can be embedded in an iframe on
+# another domain and still submit forms (set both to "None" there; Django
+# requires the corresponding *_COOKIE_SECURE flag when using "None").
+CSRF_COOKIE_SAMESITE = os.getenv("CSRF_COOKIE_SAMESITE", "Lax")
+SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "Lax")
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 
@@ -236,7 +239,7 @@ LOGOUT_REDIRECT_URL = "index"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = False
-X_FRAME_OPTIONS = "DENY"
+X_FRAME_ANCESTORS = env_list("FRAME_ANCESTORS", "*")
 REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 if not DEBUG:

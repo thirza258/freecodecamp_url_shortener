@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-nevatal_url_shortener}
       POSTGRES_USER: ${POSTGRES_USER:-nevatal}
@@ -15,20 +16,23 @@ services:
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis_data:/data
 
   web:
     build: .
+    restart: unless-stopped
     env_file:
       - .env
     environment:
       DEBUG: ${DEBUG:-0}
       SECRET_KEY: ${SECRET_KEY:-change-me}
-      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,url.nevatal.tech,nevatal.tech}
-      DOMAIN_NAME: ${DOMAIN_NAME:-url.nevatal.tech}
-      PUBLIC_SHORT_DOMAIN: ${PUBLIC_SHORT_DOMAIN:-url.nevatal.tech}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,url.nevatal.id,nevatal.id}
+      DOMAIN_NAME: ${DOMAIN_NAME:-url.nevatal.id}
+      PUBLIC_SHORT_DOMAIN: ${PUBLIC_SHORT_DOMAIN:-url.nevatal.id}
+      FRAME_ANCESTORS: ${FRAME_ANCESTORS:-*}
       POSTGRES_DB: ${POSTGRES_DB:-nevatal_url_shortener}
       POSTGRES_USER: ${POSTGRES_USER:-nevatal}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nevatal}

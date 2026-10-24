@@ -187,7 +187,7 @@ class ShortenerRedirectTests(BaseShortenerTestCase):
         response = self.client.get(reverse("success", kwargs={"short_code": "success123"}))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "https://url.nevatal.tech/success123")
+        self.assertContains(response, "https://url.nevatal.id/success123")
         self.assertContains(response, "data:image/png;base64,")
 
     @override_settings(SHORTENER_REDIRECT_RATE_LIMIT="1/m")
@@ -284,3 +284,19 @@ class ShortenerSEOTests(BaseShortenerTestCase):
         self.assertIn("sitemap.xml", settings.RESERVED_SHORT_CODES)
         self.assertIn("site.webmanifest", settings.RESERVED_SHORT_CODES)
         self.assertIn("favicon.svg", settings.RESERVED_SHORT_CODES)
+
+
+class ShortenerFrameEmbeddingTests(BaseShortenerTestCase):
+    def test_no_x_frame_options_header_blocks_embedding(self) -> None:
+        response = self.client.get(reverse("index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("X-Frame-Options", response)
+
+    def test_csp_frame_ancestors_allows_embedding(self) -> None:
+        response = self.client.get(reverse("index"))
+
+        csp = response.get("Content-Security-Policy")
+        self.assertIsNotNone(csp)
+        self.assertIn("frame-ancestors", csp)
+        self.assertIn("*", csp)

@@ -7,7 +7,7 @@ Production-ready Django URL shortener with server-rendered Bootstrap 5 UI.
 - Shorten long URLs
 - Optional custom slugs
 - Duplicate slug prevention with database uniqueness and form validation
-- Root-path redirects for `https://url.nevatal.tech/<short_code>`
+- Root-path redirects for `https://url.nevatal.id/<short_code>`
 - Click analytics, last-accessed timestamps, and dashboard stats
 - Request rate limiting with friendly 429 responses
 - Production Docker deployment with PostgreSQL 16 Alpine and Redis
@@ -18,8 +18,12 @@ Production-ready Django URL shortener with server-rendered Bootstrap 5 UI.
 2. Build and run the stack:
 
 ```bash
-docker compose up --build
+docker compose up --build -d
+docker compose logs -f web
 ```
+
+Always run with `-d` (detached): without it the stack stops as soon as the
+terminal or SSH session closes.
 
 The Django app listens on port `8200`.
 PostgreSQL is exposed as the `postgres` service inside the Compose network.
@@ -43,6 +47,27 @@ docker compose up --build -d
 
 The web container runs Django migrations and static collection on startup.
 
+## Keeping it running
+
+Every service has `restart: unless-stopped`, so a crashed container (e.g.
+killed by the OOM killer) comes back on its own. Two more steps make the
+site survive reboots and logouts:
+
+1. Start the stack detached (see above) — never `docker compose up` in the
+   foreground of an SSH session, because closing that session stops it.
+2. Optional: install the included systemd unit so systemd starts the stack
+   at boot and you never have to think about it:
+
+```bash
+# edit WorkingDirectory inside the unit file to point at this repo
+sudo cp deploy/nevatal-url-shortener.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now nevatal-url-shortener
+```
+
+Check on it anytime with `systemctl status nevatal-url-shortener` and
+`docker compose logs -f web`.
+
 ## Environment
 
 The app expects these variables:
@@ -58,16 +83,17 @@ The app expects these variables:
 - `REDIS_URL`
 - `DOMAIN_NAME`
 - `PUBLIC_SHORT_DOMAIN`
+- `FRAME_ANCESTORS` — who may embed the site in an iframe; `*` (default) = any site, a comma-separated origin list to restrict, `none` to block
 
 The Compose file provides sane defaults for local development:
 
-- Main app domain: `url.nevatal.tech`
-- Public short-link domain: `url.nevatal.tech`
+- Main app domain: `url.nevatal.id`
+- Public short-link domain: `url.nevatal.id`
 
 ## URL structure
 
-- Main site: `https://url.nevatal.tech`
-- Public short links: `https://url.nevatal.tech/<short_code>`
+- Main site: `https://url.nevatal.id`
+- Public short links: `https://url.nevatal.id/<short_code>`
 
 ## Notes
 

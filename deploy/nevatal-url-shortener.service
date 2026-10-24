@@ -1,0 +1,19 @@
+[Unit]
+Description=Nevatal URL Shortener (Docker Compose)
+# Runs `docker compose up -d` detached, so the site stays up after you
+# log out and comes back automatically after a reboot or a crash.
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Set this to the directory that contains docker-compose.yml:
+WorkingDirectory=/opt/nevatal-url-shortener
+ExecStart=/usr/bin/docker compose up -d --remove-orphans
+ExecStop=/usr/bin/docker compose down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
