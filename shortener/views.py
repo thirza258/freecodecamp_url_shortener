@@ -183,6 +183,13 @@ def robots_txt(_request: HttpRequest) -> HttpResponse:
     return HttpResponse(content.strip() + "\n", content_type="text/plain; charset=utf-8")
 
 
+def ads_txt(_request: HttpRequest) -> HttpResponse:
+    return HttpResponse(
+        "google.com, pub-3592604467898331, DIRECT, f08c47fec0942fa0\n",
+        content_type="text/plain; charset=utf-8",
+    )
+
+
 def sitemap_xml(_request: HttpRequest) -> HttpResponse:
     domain = settings.APP_DOMAIN
     protocol = settings.SHORT_LINK_PROTOCOL

@@ -44,6 +44,7 @@ SHORTENER_CREATE_RATE_LIMIT = os.getenv("SHORTENER_CREATE_RATE_LIMIT", "10/m")
 SHORTENER_REDIRECT_RATE_LIMIT = os.getenv("SHORTENER_REDIRECT_RATE_LIMIT", "100/m")
 RESERVED_SHORT_CODES = {
     "admin",
+    "ads.txt",
     "health",
     "robots.txt",
     "sitemap.xml",
