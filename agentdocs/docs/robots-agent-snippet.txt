@@ -1,0 +1,6 @@
+User-agent: *
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
+Allow: /
+
+Host: https://url.nevatal.id
+Agentmap: https://url.nevatal.id/.well-known/ai-catalog.json

@@ -1,0 +1,28 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Nevatal URL Shortener",
+    "identifier": "did:web:url.nevatal.id"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:url.nevatal.id:api:site",
+      "displayName": "Nevatal URL Shortener API",
+      "type": "application/json",
+      "url": "https://url.nevatal.id/health/",
+      "representativeQueries": [
+        "what does Nevatal URL Shortener do",
+        "get data from Nevatal URL Shortener"
+      ]
+    },
+    {
+      "identifier": "urn:air:url.nevatal.id:server:mcp",
+      "displayName": "Nevatal URL Shortener MCP Server",
+      "type": "application/mcp-server-card+json",
+      "url": "https://url.nevatal.id/.well-known/mcp/server-card.json",
+      "representativeQueries": [
+        "query Nevatal URL Shortener"
+      ]
+    }
+  ]
+}

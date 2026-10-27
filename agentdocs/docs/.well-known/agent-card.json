@@ -1,0 +1,50 @@
+{
+  "name": "Nevatal URL Shortener Agent",
+  "description": "Create, manage and resolve short links with click analytics.",
+  "url": "https://url.nevatal.id",
+  "provider": {
+    "name": "Nevatal",
+    "url": "https://url.nevatal.id"
+  },
+  "version": "1.0.0",
+  "protocolVersion": "0.3.0",
+  "preferredTransport": "JSONRPC",
+  "supportedInterfaces": [
+    {
+      "url": "https://url.nevatal.id/api",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "0.3.0"
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "shorten-url",
+      "name": "Create Short Link",
+      "description": "Create a short link from a long URL."
+    },
+    {
+      "id": "resolve-short-url",
+      "name": "Resolve Short Link",
+      "description": "Resolve a short link to its destination."
+    },
+    {
+      "id": "link-analytics",
+      "name": "Link Analytics",
+      "description": "Read click counts and referrer statistics for a short link."
+    }
+  ],
+  "authentication": {
+    "type": "oauth2",
+    "discovery_url": "https://url.nevatal.id/.well-known/oauth-authorization-server"
+  }
+}

@@ -5,6 +5,7 @@ from shortener.views import not_found, server_error
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", include("agentdocs.urls")),
     path("", include("shortener.urls")),
 ]
 

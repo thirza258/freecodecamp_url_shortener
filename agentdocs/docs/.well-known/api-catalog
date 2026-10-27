@@ -1,0 +1,25 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://url.nevatal.id/api",
+      "service-desc": [
+        {
+          "href": "https://url.nevatal.id/health/",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://url.nevatal.id/auth.md",
+          "type": "text/markdown"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://url.nevatal.id/health/",
+          "type": "application/json"
+        }
+      ]
+    }
+  ]
+}

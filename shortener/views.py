@@ -171,16 +171,20 @@ def robots_txt(_request: HttpRequest) -> HttpResponse:
     protocol = settings.SHORT_LINK_PROTOCOL
     content = (
         "User-agent: *\n"
+        "Content-Signal: ai-train=yes, search=yes, ai-input=yes\n"
         "Allow: /\n"
         "Allow: /static/\n"
         "Disallow: /admin/\n"
         "Disallow: /logout/\n"
         "Disallow: /health/\n"
         "Disallow: /success/\n\n"
-        f"Host: {domain}\n"
+        f"Host: {protocol}://{domain}\n"
         f"Sitemap: {protocol}://{domain}/sitemap.xml\n"
+        f"Agentmap: {protocol}://{domain}/.well-known/ai-catalog.json\n"
     )
-    return HttpResponse(content.strip() + "\n", content_type="text/plain; charset=utf-8")
+    response = HttpResponse(content.strip() + "\n", content_type="text/plain; charset=utf-8")
+    response["Cache-Control"] = "no-cache, must-revalidate"
+    return response
 
 
 def ads_txt(_request: HttpRequest) -> HttpResponse:

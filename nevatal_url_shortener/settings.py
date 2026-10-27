@@ -100,6 +100,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "nevatal_url_shortener.middleware.FrameAncestorsMiddleware",
+    "agentdocs.middleware.AgentDiscoveryMiddleware",
 ]
 
 ROOT_URLCONF = "nevatal_url_shortener.urls"

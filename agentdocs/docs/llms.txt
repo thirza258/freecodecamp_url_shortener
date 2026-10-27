@@ -1,0 +1,11 @@
+# Nevatal URL Shortener
+
+> Create, manage and resolve short links with click analytics.
+
+## Endpoints
+- Homepage: https://url.nevatal.id/
+- API: https://url.nevatal.id/health/
+- API Catalog: https://url.nevatal.id/.well-known/api-catalog
+- Agent Card: https://url.nevatal.id/.well-known/agent-card.json
+- AI Catalog: https://url.nevatal.id/.well-known/ai-catalog.json
+- Authentication Guide: https://url.nevatal.id/auth.md

@@ -255,5 +255,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{% static 'js/site.js' %}"></script>
     {% block extra_js %}{% endblock %}
-  </body>
+  <script id="webmcp-tools">
+  (function () {
+    const tools = [
+      {
+        name: "get_nevatal_url_shortener_info",
+        description: "Get the site name, description and API location for Nevatal URL Shortener.",
+        inputSchema: { type: "object", properties: {} },
+        execute: async function () {
+          const res = await fetch("/.well-known/agent-card.json");
+          return await res.json();
+        }
+      }
+    ];
+    const mc = (typeof navigator !== "undefined" && navigator.modelContext) ||
+      (typeof document !== "undefined" && document.modelContext);
+    if (!mc) return;
+    if (typeof mc.provideContext === "function") {
+      try { mc.provideContext({ tools: tools }); } catch (e) {}
+    }
+    if (typeof mc.registerTool === "function") {
+      tools.forEach(function (tool) {
+        try { mc.registerTool(tool); } catch (e) {}
+      });
+    }
+  })();
+</script>
+</body>
 </html>

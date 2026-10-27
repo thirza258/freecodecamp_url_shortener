@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "shorten-url",
+      "type": "skill-md",
+      "description": "Create a short link from a long URL.",
+      "url": "https://url.nevatal.id/.well-known/agent-skills/shorten-url/SKILL.md"
+    },
+    {
+      "name": "resolve-short-url",
+      "type": "skill-md",
+      "description": "Resolve a short link to its destination.",
+      "url": "https://url.nevatal.id/.well-known/agent-skills/resolve-short-url/SKILL.md"
+    },
+    {
+      "name": "link-analytics",
+      "type": "skill-md",
+      "description": "Read click counts and referrer statistics for a short link.",
+      "url": "https://url.nevatal.id/.well-known/agent-skills/link-analytics/SKILL.md"
+    }
+  ]
+}
