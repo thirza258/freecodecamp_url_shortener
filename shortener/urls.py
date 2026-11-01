@@ -21,6 +21,8 @@ urlpatterns = [
     path("robots.txt", views.robots_txt, name="robots_txt"),
     path("ads.txt", views.ads_txt, name="ads_txt"),
     path("sitemap.xml", views.sitemap_xml, name="sitemap_xml"),
+    path("privacy/", views.privacy_policy, name="privacy"),
+    path("terms/", views.terms_of_service, name="terms"),
     path("site.webmanifest", views.site_manifest, name="site_manifest"),
     path("manifest.json", views.site_manifest, name="manifest_json"),
 ]

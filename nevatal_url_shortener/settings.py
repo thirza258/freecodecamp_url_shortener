@@ -60,6 +60,8 @@ RESERVED_SHORT_CODES = {
     "login",
     "logout",
     "success",
+    "privacy",
+    "terms",
 }
 
 ALLOWED_HOSTS = list(

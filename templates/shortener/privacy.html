@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy · {{ SITE_NAME }}{% endblock %}
+{% block meta_title %}Privacy Policy · {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}Privacy Policy for {{ SITE_NAME }}. Learn how our fully self-hosted URL shortening service safeguards your data and link privacy.{% endblock %}
+
+{% block content %}
+<div class="hero-section mb-4 mb-lg-5">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-8">
+      <span class="eyebrow">[ DATA PRIVACY &amp; LOCAL SOVEREIGNTY ]</span>
+      <h1 class="hero-title mb-2">Privacy Policy</h1>
+      <p class="section-lead mb-0">Learn how {{ SITE_NAME }} handles your link records and account security with complete self-hosted isolation.</p>
+    </div>
+    <div class="col-lg-4 text-lg-end">
+      <a href="{% url 'terms' %}" class="btn btn-outline-secondary">View Terms of Service &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-center mb-5">
+  <div class="col-lg-10">
+    <div class="card p-4 p-md-5 border-0 shadow-sm" style="background: var(--card-bg, #ffffff); border-radius: 16px;">
+      
+      <div class="alert alert-info d-flex align-items-center gap-3 mb-4" role="alert" style="border-radius: 12px;">
+        <span style="font-size: 1.5rem;">🔒</span>
+        <div>
+          <strong>100% Fully Self-Hosted Platform:</strong> {{ SITE_NAME }} is completely self-hosted on private infrastructure. Your data does not go anywhere: it is never sold, shared, or sent to external data brokers or telemetry clouds.
+        </div>
+      </div>
+
+      <div class="text-secondary small font-mono mb-4 pb-2 border-bottom">
+        Effective Date: November 1, 2026 &bull; Version 1.1
+      </div>
+
+      <div class="space-y-4">
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">1. Overview &amp; Local Data Boundary</h2>
+          <p class="text-secondary leading-relaxed">
+            At <strong>{{ SITE_NAME }}</strong> (<span class="font-mono text-dark">{{ SHORT_LINK_DOMAIN }}</span>), we believe in link simplicity and complete privacy. Unlike commercial link shorteners that monetize user traffic, our service is completely self-hosted on private servers. All click logs, destination URLs, and analytics stay strictly within our isolated database.
+          </p>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">2. Information We Process</h2>
+          <ul class="text-secondary leading-relaxed ps-3">
+            <li class="mb-2"><strong>Destination URLs:</strong> Long URLs that you submit to generate short links are stored in our local PostgreSQL database to execute redirects.</li>
+            <li class="mb-2"><strong>Account Information:</strong> If you create a free account to manage links, we store your username and salted password hash. We never store plain passwords.</li>
+            <li class="mb-2"><strong>Routing Telemetry &amp; Analytics:</strong> When a shortened link is clicked, our server records aggregate counts (timestamp, referer header, user-agent) strictly to provide link owners with aggregate click analytics.</li>
+            <li class="mb-2"><strong>Security &amp; Abuse Prevention:</strong> IP addresses may be temporarily evaluated in local Redis caches solely for rate limiting and DDoS mitigation.</li>
+          </ul>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">3. Artificial Intelligence Policy</h2>
+          <p class="text-secondary leading-relaxed">
+            <strong>{{ SITE_NAME }} does not utilize artificial intelligence inference or external AI APIs.</strong> We do not dispatch any prompt, URL, or visitor data to external AI models or services like OpenRouter. All redirection and tracking logic operates strictly via local, deterministic server code.
+          </p>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">4. Cookies and Session Management</h2>
+          <p class="text-secondary leading-relaxed">
+            We only use essential HTTP cookies necessary for session authentication when you log into your dashboard. We do not use third-party cross-site trackers, behavioral ad pixels, or surveillance cookies.
+          </p>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">5. Data Retention &amp; User Controls</h2>
+          <p class="text-secondary leading-relaxed">
+            You maintain full control of your shortened links. Authenticated users can review, inspect, and purge shortened links directly through the Dashboard at any time.
+          </p>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">6. Security Measures</h2>
+          <p class="text-secondary leading-relaxed">
+            All connections are enforced over TLS (HTTPS). Database access is restricted to localhost network boundaries with strong credential isolation.
+          </p>
+        </section>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

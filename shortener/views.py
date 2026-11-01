@@ -228,8 +228,28 @@ def sitemap_xml(_request: HttpRequest) -> HttpResponse:
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>{base_url}/privacy/</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>{base_url}/terms/</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>"""
     return HttpResponse(xml_content.strip(), content_type="application/xml; charset=utf-8")
+
+
+def privacy_policy(request: HttpRequest) -> HttpResponse:
+    return render(request, "shortener/privacy.html")
+
+
+def terms_of_service(request: HttpRequest) -> HttpResponse:
+    return render(request, "shortener/terms.html")
 
 
 def site_manifest(_request: HttpRequest) -> JsonResponse:

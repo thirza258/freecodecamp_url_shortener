@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Terms of Service · {{ SITE_NAME }}{% endblock %}
+{% block meta_title %}Terms of Service · {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}Terms of Service for {{ SITE_NAME }}. Acceptable use guidelines and fair-use policy for our self-hosted URL shortener.{% endblock %}
+
+{% block content %}
+<div class="hero-section mb-4 mb-lg-5">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-8">
+      <span class="eyebrow">[ LEGAL &amp; ACCEPTABLE USE ]</span>
+      <h1 class="hero-title mb-2">Terms of Service</h1>
+      <p class="section-lead mb-0">The rules and fair-use guidelines governing the use of {{ SITE_NAME }}.</p>
+    </div>
+    <div class="col-lg-4 text-lg-end">
+      <a href="{% url 'privacy' %}" class="btn btn-outline-secondary">View Privacy Policy &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-center mb-5">
+  <div class="col-lg-10">
+    <div class="card p-4 p-md-5 border-0 shadow-sm" style="background: var(--card-bg, #ffffff); border-radius: 16px;">
+      
+      <div class="alert alert-secondary d-flex align-items-center gap-3 mb-4" role="alert" style="border-radius: 12px;">
+        <span style="font-size: 1.5rem;">⚖️</span>
+        <div>
+          <strong>Self-Hosted Infrastructure:</strong> {{ SITE_NAME }} is provided on a self-hosted platform for personal and public convenience. By shortening links on this platform, you agree to comply with our acceptable use rules.
+        </div>
+      </div>
+
+      <div class="text-secondary small font-mono mb-4 pb-2 border-bottom">
+        Effective Date: November 1, 2026 &bull; Version 1.1
+      </div>
+
+      <div class="space-y-4">
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">1. Acceptance of Terms</h2>
+          <p class="text-secondary leading-relaxed">
+            By creating or accessing shortened links through <strong>{{ SITE_NAME }}</strong> (<span class="font-mono text-dark">{{ SHORT_LINK_DOMAIN }}</span>), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, do not use the service.
+          </p>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">2. Acceptable Use Policy</h2>
+          <p class="text-secondary leading-relaxed">
+            You agree to use this service exclusively for legitimate and lawful redirection purposes. You strictly agree <strong>NOT</strong> to shorten links pointing to:
+          </p>
+          <ul class="text-secondary leading-relaxed ps-3">
+            <li class="mb-2">Malware, trojans, ransomware, or drive-by exploit payload downloads.</li>
+            <li class="mb-2">Phishing schemes, credential-harvesting pages, or deceptive impersonation.</li>
+            <li class="mb-2">Illegal, harassing, copyright-infringing, or non-consensual material.</li>
+            <li class="mb-2">Unsolicited bulk email spam, messaging spam, or bot-driven traffic generation.</li>
+          </ul>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">3. Link Moderation and Removal</h2>
+          <p class="text-secondary leading-relaxed">
+            As a self-hosted platform operator, we reserve the full right to disable, blacklist, or permanently remove any shortened link or associated account found to violate these terms or applicable laws without prior warning.
+          </p>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">4. Rate Limits &amp; Service Availability</h2>
+          <p class="text-secondary leading-relaxed">
+            To maintain high availability for all users, rate limits are automatically enforced on link generation and lookup endpoints. The service is provided on an "as is" and "as available" basis without warranties of uninterrupted operation.
+          </p>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">5. Intellectual Property</h2>
+          <p class="text-secondary leading-relaxed">
+            You retain all rights to the underlying original content of the URLs you shorten. {{ SITE_NAME }} claims no ownership over external third-party destination websites.
+          </p>
+        </section>
+
+        <section class="mb-4">
+          <h2 class="h4 fw-bold mb-3">6. Changes to Terms</h2>
+          <p class="text-secondary leading-relaxed">
+            We may update these terms periodically to reflect service evolutions. Continued use of {{ SITE_NAME }} after updates constitutes agreement to the revised terms.
+          </p>
+        </section>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
